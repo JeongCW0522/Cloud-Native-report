@@ -1,15 +1,24 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import errorHandler from "./middleware/errorHandler.js";
 import router from "./routes/user.route.js";
+import { sessionMiddleware } from "./middleware/session.js";
 
 const app = express();
 const PORT = 8001;
 
 // JSON 형식의 요청을 처리할 수 있도록 설정
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://insightbox.com", "http://localhost:3000"],
+    credentials: true,
+  })
+);
+
+// Redis 세션 적용!
+app.use(sessionMiddleware);
+
 app.use("/v1", router);
 app.use(errorHandler);
 

@@ -1,10 +1,4 @@
-import type {
-  RequestLogin,
-  RequestSignup,
-  ResponseLogin,
-  ResponseSignup,
-  ResponseUserInfo,
-} from '@/types/auth';
+import type { RequestLogin, RequestSignup, ResponseLogin, ResponseSignup } from '@/types/auth';
 import { axiosUserInstance } from './api';
 
 export const postSignup = async (body: RequestSignup): Promise<ResponseSignup> => {
@@ -25,7 +19,7 @@ export const postLogout = async () => {
   return data;
 };
 
-export const getUserInfo = async (): Promise<ResponseUserInfo> => {
+export const getUserInfo = async (): Promise<ResponseSignup> => {
   const { data } = await axiosUserInstance.get('/v1/users/me');
 
   return data;
@@ -34,8 +28,7 @@ export const getUserInfo = async (): Promise<ResponseUserInfo> => {
 export const updateUserInfo = async (body: {
   name: string;
   email: string;
-  password: string;
-}): Promise<ResponseUserInfo> => {
+}): Promise<ResponseSignup> => {
   const { data } = await axiosUserInstance.patch('/v1/users', body);
 
   return data;

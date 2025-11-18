@@ -9,7 +9,12 @@ const PORT = 8002;
 
 // JSON 형식의 요청을 처리할 수 있도록 설정
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 
 // 업로드된 파일 접근 가능하게 설정

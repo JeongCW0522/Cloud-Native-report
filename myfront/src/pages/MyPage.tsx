@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import { FiUser } from 'react-icons/fi';
 import { MdOutlineEmail } from 'react-icons/md';
-import { TbLockPassword } from 'react-icons/tb';
 import { FaRegStar } from 'react-icons/fa6';
 import { GrScorecard } from 'react-icons/gr';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { myPageSchema, type myPageType } from '@/schema/myPagaSchema';
 import clsx from 'clsx';
+import { useQuery } from '@tanstack/react-query';
+import { getUserInfo } from '@/api/auth';
+import { getLinks } from '@/api/links';
 
 const MyPage = () => {
   const navigate = useNavigate();
@@ -23,12 +25,32 @@ const MyPage = () => {
   } = useForm<myPageType>({
     resolver: zodResolver(myPageSchema),
     mode: 'onChange',
-    defaultValues: {
-      name: '홍길동',
-      email: 'hong@example.com',
-      password: '123456',
-    },
   });
+
+  const { data: linksData } = useQuery({
+    queryKey: ['links', ''], // 검색 없이 전체 조회
+    queryFn: () => getLinks(''),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const totalCount = linksData?.data.length ?? 0;
+  const favoriteCount = linksData?.data.filter((l) => l.favorite).length ?? 0;
+
+  const { data: userData } = useQuery({
+    queryKey: ['userInfo'],
+    queryFn: getUserInfo,
+    gcTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  useEffect(() => {
+    if (userData) {
+      reset({
+        name: userData.data.name,
+        email: userData.data.email,
+      });
+    }
+  }, [userData, reset]);
 
   const onSubmit: SubmitHandler<myPageType> = (data) => {
     alert('변경사항이 저장되었습니다.');
@@ -58,9 +80,9 @@ const MyPage = () => {
         <div className='p-6'>
           <div className='flex items-center gap-4 mb-6'>
             <div className='w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-white text-2xl font-bold'>
-              홍
+              {userData?.data.name?.charAt(0)}
             </div>
-            <h3 className='text-lg font-semibold'>홍길동</h3>
+            <h3 className='text-lg font-semibold'>{userData?.data.name}</h3>
           </div>
 
           {/* 통계 섹션 */}
@@ -70,14 +92,14 @@ const MyPage = () => {
                 <GrScorecard size={24} />
                 <span className='text-md font-semibold'>콘텐츠</span>
               </div>
-              <p className='text-2xl font-bold'>24</p>
+              <p className='text-2xl font-bold'>{totalCount}</p>
             </div>
             <div className='bg-pink-50 rounded-lg p-4'>
               <div className='flex items-center gap-2 text-pink-600 mb-2'>
                 <FaRegStar size={24} />
                 <span className='text-md font-semibold'>즐겨찾기</span>
               </div>
-              <p className='text-2xl font-bold'>12</p>
+              <p className='text-2xl font-bold'>{favoriteCount}</p>
             </div>
           </div>
 
@@ -120,25 +142,6 @@ const MyPage = () => {
                 />
                 {errors.email && (
                   <p className='text-red-500 text-sm mt-2 text-left'>{errors.email.message}</p>
-                )}
-              </div>
-              <div>
-                <label className='flex items-center gap-2 text-sm font-medium text-gray-700 mb-2'>
-                  <TbLockPassword size={18} />
-                  <span>비밀번호</span>
-                </label>
-                <input
-                  type='text'
-                  placeholder='비밀번호를 입력하세요'
-                  disabled={!isEditing}
-                  {...register('password')}
-                  className={clsx(
-                    'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed',
-                    errors.password && 'border-red-500 focus:border-gray-400',
-                  )}
-                />
-                {errors.password && (
-                  <p className='text-red-500 text-sm mt-2 text-left'>{errors.password.message}</p>
                 )}
               </div>
             </div>

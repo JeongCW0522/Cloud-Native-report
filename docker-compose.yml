@@ -27,11 +27,14 @@ services:
       - /app/node_modules
     depends_on:
       - db
+      - myredis
     environment:
       - DB_HOST=mysql
       - DB_USER=mysql_db
       - DB_PASSWORD=123456
       - DB_NAME=mysql_db
+      - REDIS_HOST=myredis
+      - REDIS_PORT=6379
 
   mylinkapi:
     build: ./mylinkapi
@@ -44,11 +47,14 @@ services:
       - /app/node_modules
     depends_on:
       - db
+      - myredis
     environment:
       - DB_HOST=mysql
       - DB_USER=mysql_db
       - DB_PASSWORD=123456
       - DB_NAME=mysql_db
+      - REDIS_HOST=myredis
+      - REDIS_PORT=6379
 
   db:
     image: mysql:8
@@ -67,6 +73,16 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     volumes:
       - db_data:/var/lib/mysql
+
+  myredis:
+    image: redis:7
+    container_name: myredis
+    networks:
+      - mynet
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   nginx:
     image: nginx:latest
@@ -88,3 +104,4 @@ networks:
 
 volumes:
   db_data:
+  redis_data:

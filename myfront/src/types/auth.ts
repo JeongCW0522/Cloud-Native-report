@@ -23,12 +23,3 @@ export type ResponseSignup = CommonResponse<{
   createAt: Date;
   updatedAt: Date;
 }>;
-
-export type ResponseUserInfo = CommonResponse<{
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  createAt: Date;
-  updatedAt: Date;
-}>;

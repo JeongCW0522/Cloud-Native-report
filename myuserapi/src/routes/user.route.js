@@ -16,10 +16,10 @@ router.post("/auth/login", postLogin);
 // POST /v1/auth/logout - 로그아웃
 router.post("/auth/logout", postLogout);
 
-// GET /v1/user/me - 정보 조회
+// GET /v1/users/me - 정보 조회
 router.get("/users/me", getUserInfo);
 
-// PATCH /v1/user - 정보 수정
+// PATCH /v1/users - 정보 수정
 router.patch("/users", patchUserInfo);
 
 export default router;

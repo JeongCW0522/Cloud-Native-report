@@ -16,7 +16,7 @@ export const postLogin = async (req, res) => {
   try {
     // 2) 사용자 조회
     const [rows] = await pool.query(
-      "SELECT id, name, email, password FROM users WHERE email = ?",
+      "SELECT id, name, email, password, createdAt, updatedAt FROM users WHERE email = ? LIMIT 1",
       [email]
     );
 
@@ -40,7 +40,18 @@ export const postLogin = async (req, res) => {
       });
     }
 
-    // 4) 응답
+    // 4) 로그인 성공 -> 세션 저장
+    req.session.user = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+
+    console.log("세션 저장됨:", req.session.user);
+
+    // 5) 응답
     return res.status(201).json({
       status: true,
       statusCode: 201,
@@ -48,6 +59,9 @@ export const postLogin = async (req, res) => {
       data: {
         id: user.id,
         name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
       },
     });
   } catch (err) {
