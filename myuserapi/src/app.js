@@ -1,0 +1,20 @@
+// server.js
+import express from "express";
+import cors from "cors";
+
+const app = express();
+const PORT = 8001;
+
+// JSON 형식의 요청을 처리할 수 있도록 설정
+app.use(express.json());
+app.use(cors());
+
+// 테스트
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", message: "Link API is running" });
+});
+
+// 서버 실행
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Link API running on port ${PORT}`);
+});
