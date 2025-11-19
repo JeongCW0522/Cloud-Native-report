@@ -20,12 +20,13 @@ const SideBar = ({ setFilter, currentFilter }: SideBarProps) => {
   const location = useLocation();
   const queryClient = useQueryClient();
 
+  // 로그아웃 핸들러
   const handleLogout = async () => {
     await postLogout();
-    queryClient.clear();
+    queryClient.clear(); // 로그아웃 시 캐시 데이터 초기화
 
     alert('로그아웃 되었습니다.');
-    navigate('/login');
+    navigate('/login'); // 로그아웃 후 로그인 페이지로 리다이렉트
   };
 
   return (
@@ -38,6 +39,7 @@ const SideBar = ({ setFilter, currentFilter }: SideBarProps) => {
       <div className='p-6'>
         <h2 className='text-xl font-bold text-gray-800 mb-6'>Menu</h2>
         <nav className='space-y-2'>
+          {/* 홈 탭 */}
           <button
             type='button'
             onClick={() => setFilter('all')}
@@ -52,6 +54,7 @@ const SideBar = ({ setFilter, currentFilter }: SideBarProps) => {
             <span className='font-medium'>홈</span>
           </button>
 
+          {/* 즐겨찾기 탭 */}
           <button
             type='button'
             onClick={() => setFilter('favorites')}
@@ -66,6 +69,7 @@ const SideBar = ({ setFilter, currentFilter }: SideBarProps) => {
             <span>즐겨찾기</span>
           </button>
 
+          {/* 마이페이지 탭 */}
           <button
             type='button'
             onClick={() => navigate('/mypage')}
@@ -82,6 +86,7 @@ const SideBar = ({ setFilter, currentFilter }: SideBarProps) => {
         </nav>
       </div>
 
+      {/* 로그아웃 버튼 */}
       <div className='p-4 border-t border-gray-200'>
         <button
           type='button'

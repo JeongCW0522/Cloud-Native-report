@@ -1,6 +1,7 @@
 import { axiosLinkInstance } from './api';
 import type { ResponseUploadUrl } from '../types/common';
 
+// 이미지 업로드 post 요청
 export const postUpload = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append('file', file);

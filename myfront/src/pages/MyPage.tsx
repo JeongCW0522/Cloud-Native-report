@@ -34,9 +34,11 @@ const MyPage = () => {
     staleTime: 1000 * 60 * 5,
   });
 
+  // 전체 링크 개수, 즐겨찾기한 링크 개수 표시
   const totalCount = linksData?.data.length ?? 0;
   const favoriteCount = linksData?.data.filter((l) => l.favorite).length ?? 0;
 
+  // 유저 정보 조회
   const { data: userData } = useQuery({
     queryKey: ['userInfo'],
     queryFn: async () => {
@@ -46,13 +48,14 @@ const MyPage = () => {
       } catch (err: any) {
         if (err?.response?.status === 401) {
           alert('권한이 없는 요청입니다. 로그인해주세요.');
-          navigate('/login', { replace: true });
+          navigate('/login', { replace: true }); // 401 에러 = 인증되지 않은 유저일 때 로그인 페이지로 리다이렉트
         }
         throw err;
       }
     },
   });
 
+  // 서버에서 불러온 데이터로 폼 초기화
   useEffect(() => {
     if (userData) {
       reset({
@@ -62,6 +65,7 @@ const MyPage = () => {
     }
   }, [userData, reset]);
 
+  // 유저 정보 수정
   const { mutate: updateUser } = useMutation({
     mutationFn: (body: { name: string; email: string }) => updateUserInfo(body),
     onSuccess: () => {
@@ -92,7 +96,7 @@ const MyPage = () => {
   };
 
   const handleCancel = () => {
-    reset(); // 원래 값으로 복원
+    reset(); // 원래 값으로 초기화
     setIsEditing(false);
   };
 

@@ -25,7 +25,7 @@ const LoginForm = () => {
   const onSubmit: SubmitHandler<LoginType> = async (data) => {
     try {
       await postLogin(data);
-      queryClient.clear();
+      queryClient.clear(); // 로그인 시 캐시 데이터 초기화
 
       alert('로그인에 성공했습니다.');
       navigate('/');

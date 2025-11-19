@@ -19,16 +19,18 @@ const CardDetailPage = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 썸네일 클릭 시 파일 선택 창 열기
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
 
+  // 이미지 파일 업로드 처리
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      const imageUrl = await postUpload(file);
+      const imageUrl = await postUpload(file); // 서버에 파일 업로드 → 이미지 URL 반환
       setUploadedImage(imageUrl);
     } catch (err) {
       alert('이미지 업로드에 실패했습니다.');
@@ -36,9 +38,11 @@ const CardDetailPage = () => {
     }
   };
 
+  // URL 파라미터로부터 linkId 가져오기
   const { id } = useParams<{ id: string }>();
   const linkId = Number(id);
 
+  // 링크 상세 정보 조회
   const {
     data: linkData,
     isLoading,
@@ -46,15 +50,16 @@ const CardDetailPage = () => {
   } = useQuery({
     queryKey: ['linkDetail', linkId],
     queryFn: () => getLinkDetail(linkId),
-    gcTime: 100 * 60 * 10,
-    staleTime: 1000 * 60 * 5,
+    gcTime: 100 * 60 * 10, // 캐싱 유지시간
+    staleTime: 1000 * 60 * 5, // 신선도 유지
   });
 
+  // 링크 정보 수정 mutation
   const { mutate: mutateUpdate } = useMutation({
     mutationFn: (updatedData: createLink) => updateLinkDetail(linkId, updatedData),
     onSuccess: () => {
       alert('링크가 수정되었습니다');
-      queryClient.invalidateQueries({ queryKey: ['linkDetail'] });
+      queryClient.invalidateQueries({ queryKey: ['linkDetail'] }); // 상세 정보 및 전체 리스트 갱신
       queryClient.invalidateQueries({ queryKey: ['links'] });
       setIsEditing(false);
     },
@@ -63,11 +68,12 @@ const CardDetailPage = () => {
     },
   });
 
+  // 링크 삭제 mutation
   const { mutate: mutateDelete } = useMutation({
     mutationFn: () => deleteLinkDetail(linkId),
     onSuccess: () => {
       alert('링크가 삭제되었습니다');
-      queryClient.invalidateQueries({ queryKey: ['links'] });
+      queryClient.invalidateQueries({ queryKey: ['links'] }); // 리스트를 갱신하고 홈으로 이동
       setIsEditing(false);
       navigate('/');
     },
@@ -87,6 +93,7 @@ const CardDetailPage = () => {
     mode: 'onChange',
   });
 
+  // 서버에서 불러온 데이터로 폼 초기화
   useEffect(() => {
     if (linkData) {
       reset({
@@ -100,6 +107,7 @@ const CardDetailPage = () => {
   const titleValue = watch('title') || '';
   const contentValue = watch('content') || '';
 
+  // 수정 완료 → 서버에 업데이트 요청
   const onSubmit: SubmitHandler<AddCardType> = (data) => {
     mutateUpdate({
       url: data.url,
@@ -110,6 +118,7 @@ const CardDetailPage = () => {
     setIsEditing(false);
   };
 
+  // 링크 삭제 핸들러
   const handleDelete = (e: { preventDefault: () => void }) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       e.preventDefault();
@@ -117,6 +126,7 @@ const CardDetailPage = () => {
     }
   };
 
+  // 로딩 UI
   if (isLoading) {
     return (
       <main className='min-h-screen bg-white flex items-center justify-center'>
@@ -128,6 +138,7 @@ const CardDetailPage = () => {
     );
   }
 
+  // 에러 UI
   if (isError) {
     return (
       <main className='min-h-screen bg-white flex items-center justify-center'>
@@ -151,12 +162,13 @@ const CardDetailPage = () => {
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className='p-6 space-y-3'>
+            {/* 썸네일 이미지 */}
             <div className='flex flex-row gap-5 items-center'>
               <img
                 src={
                   uploadedImage ??
                   linkData?.data.thumbnail ??
-                  'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=300&fit=crop'
+                  'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=300&fit=crop' // 업로드 이미지와 업로드 됐던 이미지가 없으면 기본 이미지 보여줌
                 }
                 alt='thumbnail'
                 className={clsx(
@@ -168,6 +180,7 @@ const CardDetailPage = () => {
                 onClick={isEditing ? handleImageClick : undefined}
               />
 
+              {/* 실제 파일 input (숨겨짐) */}
               <input
                 type='file'
                 accept='image/*'
@@ -252,6 +265,7 @@ const CardDetailPage = () => {
             </div>
           </div>
 
+          {/* 하단 버튼 영역 */}
           <div className='flex flex-row gap-3 p-6 border-t border-gray-200'>
             {!isEditing ? (
               <>

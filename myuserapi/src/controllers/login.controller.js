@@ -4,7 +4,7 @@ import pool from "../config/db.js";
 export const postLogin = async (req, res) => {
   const { email, password } = req.body;
 
-  // 1) 필드 체크
+  // 유효성 검증
   if (!email || !password) {
     return res.status(400).json({
       status: false,
@@ -14,7 +14,7 @@ export const postLogin = async (req, res) => {
   }
 
   try {
-    // 2) 사용자 조회
+    // 사용자 조회
     const [rows] = await pool.query(
       "SELECT id, name, email, password, createdAt, updatedAt FROM users WHERE email = ? LIMIT 1",
       [email]
@@ -30,7 +30,7 @@ export const postLogin = async (req, res) => {
 
     const user = rows[0];
 
-    // 3) 비밀번호 검증
+    // 비밀번호 검증
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -40,7 +40,7 @@ export const postLogin = async (req, res) => {
       });
     }
 
-    // 4) 로그인 성공 -> 세션 저장
+    // 로그인 성공 -> 세션 저장
     req.session.user = {
       id: user.id,
       name: user.name,
@@ -49,9 +49,9 @@ export const postLogin = async (req, res) => {
       updatedAt: user.updatedAt,
     };
 
-    console.log("세션 저장됨:", req.session.user);
+    console.log("세션 저장됨:", req.session.user); // 디버깅용
 
-    // 5) 응답
+    // 응답
     return res.status(201).json({
       status: true,
       statusCode: 201,

@@ -21,23 +21,26 @@ const CardAddModal = ({ setIsModalOpen }: CardAddModalProps) => {
 
   const navigate = useNavigate();
 
+  // 이미지 영역 클릭 시 파일 선택창 띄우기
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
 
+  // 파일 선택 시 서버에 업로드 → 반환된 이미지 URL 저장
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      const imageUrl = await postUpload(file);
-      setUploadedImage(imageUrl);
+      const imageUrl = await postUpload(file); // 서버로 이미지 업로드
+      setUploadedImage(imageUrl); // 성공하면 URL 저장
     } catch (err) {
       alert('이미지 업로드에 실패했습니다.');
       console.error(err);
     }
   };
 
+  // 스키마 기반 유효성 검사를 위한 React Hook Form 설정
   const {
     register,
     handleSubmit,
@@ -46,27 +49,29 @@ const CardAddModal = ({ setIsModalOpen }: CardAddModalProps) => {
     formState: { errors, isValid },
   } = useForm<AddCardType>({
     resolver: zodResolver(addCardSchema),
-    mode: 'onChange',
+    mode: 'onChange', // 실시간 유효성 검사
   });
 
   const titleValue = watch('title') || '';
   const contentValue = watch('content') || '';
 
+  // 링크 생성 Mutation
   const { mutate: createLinks } = useMutation({
     mutationFn: postLinks,
     onSuccess: () => {
       alert('링크가 성공적으로 추가되었습니다!');
       setIsModalOpen(false);
       setUploadedImage(null);
-      reset();
+      reset(); // 폼 초기화
       navigate('/');
-      queryClient.invalidateQueries({ queryKey: ['links'] });
+      queryClient.invalidateQueries({ queryKey: ['links'] }); // 리스트 다시 불러오기
     },
     onError: () => {
       alert('링크 추가를 실패했습니다.');
     },
   });
 
+  // 폼 제출 핸들러
   const onSubmit: SubmitHandler<AddCardType> = (data) => {
     const newCard = {
       url: data.url,
@@ -94,6 +99,7 @@ const CardAddModal = ({ setIsModalOpen }: CardAddModalProps) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className='p-6 space-y-3'>
             <div className='flex flex-row gap-5 items-center'>
+              {/* 업로드된 이미지가 있으면 미리보기, 없으면 + 버튼 */}
               {uploadedImage ? (
                 <img
                   src={uploadedImage}
@@ -111,6 +117,7 @@ const CardAddModal = ({ setIsModalOpen }: CardAddModalProps) => {
                 </button>
               )}
 
+              {/* 실제 파일 업로드 input (hidden 처리) */}
               <input
                 type='file'
                 accept='image/*'

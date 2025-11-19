@@ -4,13 +4,16 @@ import multer from "multer";
 // 저장 경로 및 파일명 설정
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "uploads/"); // 현재 프로젝트 내 uploads/ 폴더에 저장
   },
+
+  // 저장될 파일명 설정 (중복 방지)
   filename: (req, file, cb) => {
+    // 파일명을 시간 기반 + 랜덤 숫자 + 원본 확장자 형태로 생성
     const uniqueName = `${Date.now()}-${Math.round(
       Math.random() * 1e9
     )}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
+    cb(null, uniqueName); // 저장될 파일명 전달
   },
 });
 
@@ -37,8 +40,9 @@ export const uploadImage = (req, res) => {
     ? PUBLIC_URL
     : `${req.protocol}://${req.get("host")}`;
 
-  const imageUrl = `${hostUrl}/uploads/${req.file.filename}`;
+  const imageUrl = `${hostUrl}/uploads/${req.file.filename}`; // 최종 이미지 URL
 
+  //성공 시 반환
   return res.status(201).json({
     status: true,
     statusCode: 201,

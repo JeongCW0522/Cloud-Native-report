@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// 링크 추가용 스키마
 export const addCardSchema = z.object({
   url: z.string().url('유효한 URL 형식이 아닙니다.').min(1, 'url을 입력해주세요.'),
   title: z

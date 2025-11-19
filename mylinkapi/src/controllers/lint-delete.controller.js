@@ -23,6 +23,7 @@ export const deleteLink = async (req, res, next) => {
       });
     }
 
+    // 삭제 성공
     res.status(200).json({
       status: true,
       statusCode: 200,

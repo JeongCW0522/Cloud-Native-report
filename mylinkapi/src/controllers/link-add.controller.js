@@ -3,7 +3,7 @@ import db from "../config/db.js";
 // 링크 추가
 export const createLink = async (req, res, next) => {
   try {
-    // 🔒 1) 세션 확인 (로그인 여부)
+    // 1) 세션 확인 (로그인 여부)
     if (!req.session || !req.session.user) {
       return res.status(401).json({
         status: false,
@@ -13,7 +13,7 @@ export const createLink = async (req, res, next) => {
       });
     }
 
-    // 🔑 2) 세션에서 userId 가져오기
+    // 2) 세션에서 userId 가져오기
     const userId = req.session.user.id;
 
     const { url, title, content, thumbnail, favorite } = req.body;
@@ -27,7 +27,7 @@ export const createLink = async (req, res, next) => {
       });
     }
 
-    // 🔐 3) userId 포함해서 INSERT
+    // 3) userId 포함해서 INSERT
     const [result] = await db.query(
       `INSERT INTO links (userId, url, title, content, thumbnail, favorite) 
        VALUES (?, ?, ?, ?, ?, ?)`,
@@ -48,6 +48,7 @@ export const createLink = async (req, res, next) => {
 
     const createdLink = rows[0];
 
+    // 요청 성공 시 반환
     res.status(201).json({
       status: true,
       statusCode: 201,

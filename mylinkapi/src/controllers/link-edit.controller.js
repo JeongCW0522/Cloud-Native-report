@@ -9,7 +9,7 @@ export const updateLink = async (req, res, next) => {
     console.log("받은 ID:", id); // 디버깅용
     console.log("받은 데이터:", { url, title, content, thumbnail }); // 디버깅용
 
-    // id 검증
+    // id 유효성 검사
     if (!id || isNaN(id)) {
       return res.status(400).json({
         status: false,
@@ -18,7 +18,7 @@ export const updateLink = async (req, res, next) => {
       });
     }
 
-    // 필수 값 검증
+    // 유효성 검사
     if (!url || !title) {
       return res.status(400).json({
         status: false,
@@ -31,6 +31,7 @@ export const updateLink = async (req, res, next) => {
     const [existing] = await db.query("SELECT * FROM links WHERE id = ?", [id]);
     console.log("기존 데이터:", existing); // 디버깅용
 
+    // 아이디 존재하지 않으면 404 에러
     if (existing.length === 0) {
       return res.status(404).json({
         status: false,
@@ -51,8 +52,8 @@ export const updateLink = async (req, res, next) => {
     const [rows] = await db.query("SELECT * FROM links WHERE id = ?", [id]);
     const link = rows[0];
 
+    // 요청 성공시 반환
     res.status(200).json({
-      // 201이 아닌 200이 더 적절합니다
       status: true,
       statusCode: 200,
       message: "요청이 성공했습니다.",
@@ -68,7 +69,7 @@ export const updateLink = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error("에러 발생:", error); // 디버깅용
+    console.error("에러 발생:", error);
     next(error);
   }
 };

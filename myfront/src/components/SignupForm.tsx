@@ -32,10 +32,10 @@ const SignupForm = () => {
     try {
       // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
       const { passwordConfirm, ...rest } = data;
-      await postSignup(rest);
+      await postSignup(rest); // 비밀번호 확인 데이터를 제외하고 서버로 넘김
 
       alert('회원가입에 성공했습니다.');
-      navigate('/login');
+      navigate('/login'); // 회원가입 성공 시 로그인 페이지로 리다이렉트
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (err.response?.status === 409) {

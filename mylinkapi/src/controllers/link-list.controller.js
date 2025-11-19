@@ -3,7 +3,7 @@ import db from "../config/db.js";
 // 링크 전체 조회 (세션 검사 + 사용자별 데이터 필터링)
 export const getAllLinks = async (req, res, next) => {
   try {
-    // 🔒 1) 세션 체크
+    // 1) 세션 체크
     if (!req.session || !req.session.user) {
       return res.status(401).json({
         status: false,
@@ -13,7 +13,7 @@ export const getAllLinks = async (req, res, next) => {
       });
     }
 
-    // 🔑 2) 세션에서 userId 가져오기
+    // 2) 세션에서 userId 가져오기
     const userId = req.session.user.id;
 
     const { search } = req.query;
@@ -26,7 +26,7 @@ export const getAllLinks = async (req, res, next) => {
     `;
     let params = [userId];
 
-    // 🔍 검색어 있을 때
+    // 검색어 있을 때
     if (search && search.trim() !== "") {
       const likeValue = `%${search}%`;
       query += ` AND (title LIKE ? OR content LIKE ?)`;
@@ -38,6 +38,7 @@ export const getAllLinks = async (req, res, next) => {
 
     const [rows] = await db.query(query, params);
 
+    // 요청 성공 시 반환
     res.status(200).json({
       status: true,
       statusCode: 200,

@@ -4,7 +4,7 @@ import db from "../config/db.js"; // MySQL 연결 모듈
 export const postSignup = async (req, res) => {
   const { name, email, password } = req.body;
 
-  // 1) 필드 체크
+  // 유효성 검사
   if (!name || !email || !password) {
     return res.status(400).json({
       status: false,
@@ -14,7 +14,7 @@ export const postSignup = async (req, res) => {
   }
 
   try {
-    // 2) 이메일 중복 체크
+    // 이메일 중복 체크
     const [existingUser] = await db.query(
       "SELECT id FROM users WHERE email = ?",
       [email]
@@ -27,16 +27,16 @@ export const postSignup = async (req, res) => {
       });
     }
 
-    // 3) 비밀번호 해싱
+    // 비밀번호 해싱
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4) 사용자 등록
+    // 사용자 등록
     const [result] = await db.query(
       "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
       [name, email, hashedPassword]
     );
 
-    // 5) 등록된 사용자 조회
+    // 등록된 사용자 조회
     const [userRows] = await db.query(
       "SELECT id, name, email, createdAt, updatedAt FROM users WHERE id = ?",
       [result.insertId]
@@ -44,7 +44,7 @@ export const postSignup = async (req, res) => {
 
     const user = userRows[0];
 
-    // 6) 응답
+    // 응답
     return res.status(201).json({
       status: true,
       statusCode: 201,

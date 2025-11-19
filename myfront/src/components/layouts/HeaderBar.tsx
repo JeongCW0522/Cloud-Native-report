@@ -13,18 +13,21 @@ const HeaderBar = () => {
 
   // 사용자의 실시간 입력값 (디바운스 전)
   const [inputValue, setInputValue] = useState(search);
-  const debouncedValue = useDebounce(inputValue, 500);
+  const debouncedValue = useDebounce(inputValue, 500); // 입력값 0.5초동안 변화 없을 때만 검색어 반영
 
+  // 로그인 사용자 정보 가져오기
   const { data: userData } = useQuery({
     queryKey: ['userInfo'],
     queryFn: () => getUserInfo(),
-    retry: false,
+    retry: false, // 실패 시 재요청 하지 않음
   });
 
+  // 디바운스된 검색어가 변경되면 전역 상태에 반영
   useEffect(() => {
     setSearch(debouncedValue);
   }, [debouncedValue, setSearch]);
 
+  // 화면 사이즈에 따라 사이드바 자동 열기/닫기
   useEffect(() => {
     const handleResize = () => {
       const closeSidebar = window.innerWidth < 768;
@@ -36,14 +39,15 @@ const HeaderBar = () => {
     };
 
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize); // 리사이즈 이벤트 등록
+    return () => window.removeEventListener('resize', handleResize); // 언마운트 시 이벤트 제거 (메모리 누수 방지)
   }, [setIsSidebarOpen]);
 
   return (
     <header className='bg-white border-b border-gray-200 px-6 py-4 z-50'>
       <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4'>
         <div className='flex items-center gap-3'>
+          {/* 사이드바 열기/닫기 버튼 */}
           <button
             type='button'
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -59,6 +63,7 @@ const HeaderBar = () => {
           )}
         </div>
 
+        {/* 검색창 */}
         <div className='flex items-center gap-4'>
           <div className='relative'>
             <IoSearchSharp

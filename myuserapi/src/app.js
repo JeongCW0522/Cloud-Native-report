@@ -7,11 +7,13 @@ import { sessionMiddleware } from "./middleware/session.js";
 const app = express();
 const PORT = 8001;
 
-// Redis 세션 적용!
+// Redis 세션 적용
 app.use(sessionMiddleware);
 
-// JSON 형식의 요청을 처리할 수 있도록 설정
+// JSON 요청 파싱 (req.body 사용 가능)
 app.use(express.json());
+
+// CORS 설정
 app.use(
   cors({
     origin: ["http://insightbox.com"],
@@ -19,8 +21,8 @@ app.use(
   })
 );
 
-app.use("/v1", router);
-app.use(errorHandler);
+app.use("/v1", router); // 라우터 등록
+app.use(errorHandler); // 공통 에러 핸들러
 
 // 테스트
 app.get("/health", (req, res) => {

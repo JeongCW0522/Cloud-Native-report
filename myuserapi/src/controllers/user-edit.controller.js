@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import db from "../config/db.js";
 
 export const updateUserInfo = async (req, res, next) => {
@@ -13,10 +12,11 @@ export const updateUserInfo = async (req, res, next) => {
       });
     }
 
-    const userId = req.session.user.id;
-    const { name, email, password } = req.body;
+    const userId = req.session.user.id; // 세션 정보에서 userId 가져옴
+    const { name, email } = req.body;
 
-    if (!name && !email && !password) {
+    // 수정할 데이터 필수
+    if (!name && !email) {
       return res.status(400).json({
         status: false,
         statusCode: 400,
@@ -56,12 +56,6 @@ export const updateUserInfo = async (req, res, next) => {
       }
     }
 
-    // 비밀번호 변경 시 해싱
-    let hashedPassword = user.password;
-    if (password) {
-      hashedPassword = await bcrypt.hash(password, 10);
-    }
-
     // 변경할 필드 적용
     const newName = name ?? user.name;
     const newEmail = email ?? user.email;
@@ -69,9 +63,9 @@ export const updateUserInfo = async (req, res, next) => {
     // DB 업데이트
     await db.query(
       `UPDATE users
-       SET name = ?, email = ?, password = ?, updatedAt = NOW()
+       SET name = ?, email = ?, updatedAt = NOW()
        WHERE id = ?`,
-      [newName, newEmail, hashedPassword, userId]
+      [newName, newEmail, userId]
     );
 
     // 다시 조회해서 최신 데이터 가져오기
@@ -85,6 +79,7 @@ export const updateUserInfo = async (req, res, next) => {
     // 세션 정보도 최신화
     req.session.user = updatedUser;
 
+    // 응답
     return res.status(201).json({
       status: true,
       statusCode: 201,

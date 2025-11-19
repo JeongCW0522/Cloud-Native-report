@@ -3,9 +3,9 @@ import db from "../config/db.js";
 // 링크 상세 조회
 export const getLinkDetail = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; // URL 파라미터에서 id 가져오기
 
-    // id 숫자 검증
+    // id 유효성 검사
     if (!id || isNaN(id)) {
       return res.status(400).json({
         status: false,
@@ -17,6 +17,7 @@ export const getLinkDetail = async (req, res, next) => {
     // DB 조회
     const [rows] = await db.query("SELECT * FROM links WHERE id = ?", [id]);
 
+    // 조회된 결과가 없으면 404 에러 반환
     if (rows.length === 0) {
       return res.status(404).json({
         status: false,
@@ -27,6 +28,7 @@ export const getLinkDetail = async (req, res, next) => {
 
     const link = rows[0];
 
+    // 요청 성공 시 반환
     res.status(200).json({
       status: true,
       statusCode: 200,

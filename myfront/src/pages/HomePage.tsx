@@ -18,11 +18,12 @@ export default function HomePage() {
 
   const navigate = useNavigate();
 
+  // 회원 별 링크 조회
   const { data, isLoading, isError } = useQuery({
     queryKey: ['links', search],
     queryFn: async () => {
       try {
-        return await getLinks(search);
+        return await getLinks(search); // search를 파라미터로 받으면서 검색어에 따른 링크 조회
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         // 401 에러 체크 → 로그인 페이지로 이동
