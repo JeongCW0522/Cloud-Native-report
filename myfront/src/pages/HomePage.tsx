@@ -53,7 +53,7 @@ export default function HomePage() {
               <p className='text-gray-500 text-lg'>에러가 발생했습니다.</p>
             </div>
           ) : (
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
               {data?.data
                 .filter((link) => (filter === 'favorites' ? link.favorite : true))
                 .map((link) => (
