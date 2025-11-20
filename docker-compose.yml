@@ -3,6 +3,7 @@ version: "3.9"
 services:
   myfront:
     build: ./myfront
+    image: jeongchanwon/cloud-native:myfront
     networks:
       - mynet
     ports:
@@ -18,6 +19,7 @@ services:
 
   myuserapi:
     build: ./myuserapi
+    image: jeongchanwon/cloud-native:myuserapi
     networks:
       - mynet
     ports:
@@ -38,6 +40,7 @@ services:
 
   mylinkapi:
     build: ./mylinkapi
+    image: jeongchanwon/cloud-native:mylinkapi
     networks:
       - mynet
     ports:
